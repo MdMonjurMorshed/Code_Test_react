@@ -9,6 +9,9 @@
     </div>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.5/axios.min.js" integrity="sha512-nnNHpffPSgINrsR8ZAIgFUIMexORL5tPwsfktOTxVYSv+AUAILuFYWES8IHl+hhIhpFGlKvWFiz9ZEusrPcSBQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <div class="card">
         <form action="" method="get" class="card-header">
             <div class="form-row justify-content-between">
@@ -54,60 +57,15 @@
                     </tr>
                     </thead>
 
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                        <td>Quality product in low cost</td>
-                        <td>
-                            <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
-                                <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Full
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Full
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                            </dl>
-                            <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
-                            </button>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="" class="btn btn-success">Edit</a>
-                            </div>
-                        </td>
-                    </tr>
+                    <tbody id="table_row">
+                    
+                 {% for pro in product  %}
+                
+                    {% endfor %}
+                    
+                   
                     </tbody>
+
 
                 </table>
             </div>
@@ -117,12 +75,162 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>Showing 1 to 10 out of</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <nav aria-label="Page navigation example">
+                        {% if is_paginated %}
+                        <ul class="pagination">
+                          {% if page_obj.has_previous %}
+                          <li class="page-item">
+                            <a class="page-link" href="?page={{page_obj.previous_page_number}}"
+                              >&laquo;</a
+                            >
+                          </li>
+                          {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#">&laquo;</a>
+                          </li>
+                          {% endif %} 
+                          {% for i in paginator.page_range %} 
+                        {% if page_obj.number == i %} 
+                          <li class="page-item"><a class="page-link active">{{ i }}</a></li>
+                          {% else %}
+                          <li class="page-item">
+                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                          </li>
+                          {% endif %}
+                           
+                          {% endfor %} 
 
+                          {% if page_obj.has_next %}
+                          <li class="page-item">
+                            <a href="?page={{page_obj.next_page_number}}" class="page-link"
+                              >&raquo;</a
+                            >
+                          </li>
+                          {% else %}
+                          <li class="page-item disabled">
+                            <a class="page-link">&raquo;</a>
+                          </li>
+                          {% endif %}
+                        </ul>
+                        {% endif %}
+                      </nav>
                 </div>
+                
             </div>
         </div>
+        <script>
+            $(document).ready(function(){
+                axios.get("{%url 'product:product.data'%}").then(function(response){
+                 var data=response.data
+                 
+                 
+                 var product=data.product
+                 var product_variant=data.product_variant
+                 var productVariant_price=data.product_var_price
+                 console.log(product_variant)
+                 console.log(productVariant_price)
+                 for(var i=0;i<product.length;i++){
+                    var filter_var=product_variant.filter((item)=>item.product==product[i].id)
+                   for(var j=0;j<filter_var.length;j++){
+                    
+                   }
+                   console.log(filter_var)
+                   var filter_var_price=productVariant_price.filter((item)=>item.product==product[i].id )
+                   filter_var_price.forEach(function(item){
+                   
+                   })
+                   for(var j=0;j<filter_var_price.length;j++){
+                    console.log(filter_var_price[j])
+                   }
+               
+                   for(var k=0;k<filter_var.length;k++){
+                    var var_price=productVariant_price.filter((item)=>item.var_one==filter_var[k].id)
+                    console.log(var_price)
+
+                   }
+                   
+                    console.log(filter_var_price)
+                   console.log(product[i].id)
+                   $("#table_row").append(`<tr> 
+                   <td id="product_id" value="${product[i].id}">${product[i].id}</td>
+                   <td> ${product[i].title} <br> Created at : {{pro.created_at}}</td>
+                   
+                
+                
+            
+             
+                  
+                   
+                   <td>{{pro.description}}</td>
+                 
+                  <td>
+                   <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+                       <dt class="col-sm-3 pb-0">
+                       {{obj.product_variant_one.variant_title}}/ {{obj.product_variant_two.variant_title}}/ {{obj.product_variant_three.variant_title}}
+                       </dt>
+                       <dd class="col-sm-9">
+                           <dl class="row mb-0">
+                               <dd class="col-sm-4 pb-0">Price : {{obj.price}}</dd>
+                               <dd class="col-sm-8 pb-0">InStock :{{obj.stock}}</dd>
+                           </dl>
+                       </dd>
+                       <dt class="col-sm-3 pb-0">
+                           {{obj.product_variant_one.variant_title}}/ {{obj.product_variant_two.variant_title}}/ {{obj.product_variant_three.variant_title}}
+                       </dt>
+                       <dd class="col-sm-9">
+                           <dl class="row mb-0">
+                               <dd class="col-sm-4 pb-0">Price : 200.0</dd>
+                               <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                           </dl>
+                       </dd>
+                       <dt class="col-sm-3 pb-0">
+                           L/ Black/ Full
+                       </dt>
+                       <dd class="col-sm-9">
+                           <dl class="row mb-0">
+                               <dd class="col-sm-4 pb-0">Price : 200.0</dd>
+                               <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                           </dl>
+                       </dd>
+                       <dt class="col-sm-3 pb-0">
+                           L/ Black/ Half
+                       </dt>
+                       <dd class="col-sm-9">
+                           <dl class="row mb-0">
+                               <dd class="col-sm-4 pb-0">Price : 200.0</dd>
+                               <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                           </dl>
+                       </dd>
+                   </dl>
+                   <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
+                   </button>
+               </td>
+            
+                  
+                  
+                   
+                   
+                   <td>
+                       <div class="btn-group btn-group-sm">
+                           <a href="" class="btn btn-success">Edit</a>
+                       </div>
+                   </td>
+                </tr>`)
+                 
+
+                 }
+
+            
+                 console.log( $("td").value)
+
+                
+                   
+                })
+            })
+        </script>
     </div>
+
 {% endblock %}
